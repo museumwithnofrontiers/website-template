@@ -150,7 +150,6 @@ export const sheet = {
     { key: 'bibliography', label: 'sheet.field.bibliography', value: 'bibliography' },
   ],
   layout: 'table',
-  citation: { project: (item) => item.project_key ?? '' },
   related: { variant: 'list' },
   back: { label: 'record.action.backToResults', to: { name: 'catalogue' } },
 }

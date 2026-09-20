@@ -197,6 +197,42 @@ shell, media host, outbound links. Before the application mounts, the website
 reads nothing from its package but `manifest.json`. `src/main.js` needs no edit
 after the placeholders are replaced.
 
+### A gallery or exhibition website
+
+A `gallery` or `exhibition` website does not write its platform pages in
+`src/dataset.config.js`: `@museumwnf/viewer-layout/dxa` exports them already
+composed, and `standardRoutes(family, config)` returns them as route entries
+a website spreads into `extraViews` — see the commented-out examples right
+above `extraViews` in `src/dataset.config.js`.
+
+`standardRoutes('gallery', config)` provides the About page, the Credits
+page, the search how-to page, the partners list, a partner's profile, the
+search results page, the timeline results page, the timeline gallery, the
+collection results page, the collection search form and a partner's objects
+page. Only Credits needs a per-site string, passed as `config.creditsBody`.
+
+`standardRoutes('exhibition', config)` provides the search how-to page, the
+partners list, a partner's (or institution's) profile, the search results
+page, the timeline results page, the timeline gallery, the collection
+results page, the collection search form and a partner's (or institution's)
+objects page — the institution pages share the partner pages' component,
+with no separate route to write. About, the theme gallery, the theme pages
+and the related-content page stay out of the factory for now, blocked on the
+Theme epic (inventory-app#1729). Exhibition's per-site strings are the five
+keys of `config.partnerObjects`: `emptyPartner`, `emptyInstitution`,
+`institutionSummary`, `partnerProfileLabel`, `institutionProfileLabel`.
+
+Every route name and path the factory registers is pinned inside
+viewer-layout to what every live DXA site already uses — never redeclare one
+of them here, or a second declaration of the same address will drift from
+the first. The website's own routes stay in `src/dataset.config.js`: home,
+item, and the entrances into the collection, the timeline and the partners
+section — pages that read this dataset's own shape rather than the shape the
+factory already covers.
+
+Full page, prop and slot detail: viewer-layout's README,
+["DXA family pages"](https://github.com/museumwithnofrontiers/viewer-layout#dxa-family-pages).
+
 **2. Records and translations come from viewer-core, lazily.** `entityRef`,
 `byId`, `loadTranslations`, `translations`, `tr` — see `src/composables/useCatalogue.js`,
 which is derivation over those and holds no state of its own. Rename it after

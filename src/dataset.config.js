@@ -132,6 +132,50 @@ export default {
   // each driven by a spec passed as route props: the catalogue spec says what
   // the list filters on and how a row looks, the sheet spec says which fields
   // a record shows under which labels, and the about spec is one body entry.
+  //
+  // A gallery or exhibition website does not write its platform pages here at
+  // all: `@museumwnf/viewer-layout/dxa` exports them already composed and
+  // confirmed byte-identical within their family's own site pair, and
+  // `standardRoutes(family, config)` returns them as ready-made route
+  // entries. Such a website spreads `...standardRoutes('<family>', config)`
+  // first in `extraViews`, keeping only its own routes after it — home, item
+  // and the entrances into the collection, the timeline and the partners
+  // section, which stay the website's own because they read this dataset's
+  // shape rather than the shape the factory already covers. Route names and
+  // paths are pinned inside the factory to what every DXA site already
+  // registers, so a deep link or a `legacyRoutes` entry targeting one of them
+  // keeps resolving unmodified — never redeclare one of those names or paths
+  // here. This scaffold is `standalone`, which has no standard routes: the
+  // examples below stay commented out on purpose, and a `standalone` build
+  // must never carry a live import of the DXA entry point.
+  //
+  // A gallery website:
+  //
+  //   import { standardRoutes } from '@museumwnf/viewer-layout/dxa'
+  //
+  //   extraViews: [
+  //     ...standardRoutes('gallery', { creditsBody: '__SITE_NAMESPACE__.credits.body' }),
+  //     // + this website's own routes: home, item, collection entrance,
+  //     // timeline entrance, partners entrance
+  //   ]
+  //
+  // An exhibition website:
+  //
+  //   import { standardRoutes } from '@museumwnf/viewer-layout/dxa'
+  //
+  //   extraViews: [
+  //     ...standardRoutes('exhibition', {
+  //       partnerObjects: {
+  //         emptyPartner: '__SITE_NAMESPACE__.partnerObjects.emptyPartner',
+  //         emptyInstitution: '__SITE_NAMESPACE__.partnerObjects.emptyInstitution',
+  //         institutionSummary: '__SITE_NAMESPACE__.partner.monumentsInExhibition',
+  //         partnerProfileLabel: '__SITE_NAMESPACE__.partnerObjects.partnerProfile',
+  //         institutionProfileLabel: '__SITE_NAMESPACE__.partnerObjects.institutionProfile',
+  //       },
+  //     }),
+  //     // + this website's own routes: home, item, collection entrance,
+  //     // timeline entrance, partners entrance
+  //   ]
   extraViews: [
     {
       path: '/catalogue',
