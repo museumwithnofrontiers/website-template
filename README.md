@@ -18,61 +18,68 @@ combines three `@museumwnf` packages from npmjs:
 
 ## Admin — creating a new website
 
-1. **Use this template.** On this repo's GitHub page, click **Use this
-   template → Create a new repository**. Name it after the dataset
-   (`museumwithnofrontiers/<dataset>`), keep it **public**.
-2. **Replace every `__DATASET__` placeholder** with the dataset key
-   (e.g. `islamicart`). The placeholder appears in exactly these places:
-   - `package.json` — the `name` field and the `@museumwnf/__DATASET__-data` dependency
-   - `vite.config.js` — the `@inventory-data` alias path
-   - `src/dataset.config.js` — `datasetPackage` and the `siteName` fallback
-   - `index.html` — the `<title>`
-   - `locales/en.json` — the example texts
-
-   Leave the dataset dependency's *version* (`0.0.0-REPLACE-ME`) alone — step 4
-   sets it. A half-configured copy cannot reach CI: npm itself refuses a
-   dependency still named or versioned after a placeholder, and a `preinstall`
-   check refuses the rest, naming the files you still have to edit.
-3. **Say which shared texts this website receives**, by replacing two more
-   placeholders:
-   - `__SITE_CLASS__` — `standalone`, `gallery` or `exhibition`. It appears in
-     `package.json` (`viewerI18n.class`) and in `src/main.js`, which imports
-     that bundle. A product website (a whole virtual museum) is `standalone`.
-   - `__SITE_NAMESPACE__` — the name this website's own texts carry: one
-     lowercase word, no hyphens (`carpets`, `waterInIslam`). It appears in
-     `package.json` (`viewerI18n.namespace`), `locales/en.json`,
-     `src/SiteShell.vue` and `src/dataset.config.js`.
-
-   `__SITE_CLASS__` also appears in `tests/smoke.test.js`, which imports the
-   same bundle `src/main.js` does.
-
-   See [`viewer-i18n`](https://github.com/museumwithnofrontiers/viewer-i18n) for what each
-   bundle contains.
-4. **Install the dataset.** `@museumwnf/<dataset>-data` publishes publicly to
-   npmjs, so no login, token or package-access grant is needed — on any
-   machine, or in the Docker container below, run
+1. **Run the tool.** From a `viewer-workflows` checkout (or its container, the
+   same way `propagate.mjs` runs):
 
    ```
-   npm install @museumwnf/<dataset>-data@latest
+   node tools/new-website.mjs --slug <slug> --class gallery|exhibition|standalone --namespace <ns> --title "<Site name>" [--dry-run] [--settings-only] [--no-merge]
    ```
 
-   and commit `package-lock.json` — CI uses `npm ci` and needs it. Use
-   `@latest` rather than a bare `npm install`: it resolves whatever major the
-   dataset has actually reached, so this step cannot be wrong for a dataset
-   published past 1.x.
-5. **Switch on the rails** in the new repo's settings:
-   - **Pages** → Build and deployment → Source: **GitHub Actions**.
-   - **Ruleset** for `main`: require pull requests + required status checks
-     (copy the ruleset of an existing website repo).
-   - **General → Allow auto-merge** (needed by the translator flow and Dependabot).
-   - **CodeQL** (Security → Code scanning) and Dependabot alerts.
+   - `--slug` — the dataset key (e.g. `islamicart`), used for the repo name
+     (`museumwithnofrontiers/<slug>`) and the data package
+     (`@museumwnf/<slug>-data`); replaces every `__DATASET__` placeholder.
+   - `--class` — `standalone`, `gallery` or `exhibition`. A product website (a
+     whole virtual museum) is `standalone`; the DXA families are `gallery` or
+     `exhibition`. Sets `viewerI18n.class` and picks the shared texts bundle
+     this website receives — see
+     [`viewer-i18n`](https://github.com/museumwithnofrontiers/viewer-i18n) for
+     what each bundle contains. Replaces every `__SITE_CLASS__` placeholder.
+   - `--namespace` — this website's own texts namespace: one lowercase word,
+     no hyphens (`carpets`, `waterInIslam`). Sets `viewerI18n.namespace`.
+     Replaces every `__SITE_NAMESPACE__` placeholder.
+   - `--title` — the site's display name, used wherever the scaffold needs a
+     human-readable name.
+   - `--dry-run` — print what the tool would do without creating or changing
+     anything.
+   - `--settings-only` — re-applies the repo settings below to an existing
+     repo, without creating one or opening the first PR; this is also how to
+     re-apply them later if a setting has drifted or the tool has gained a new
+     one.
+   - `--no-merge` — opens the first PR but leaves it for review instead of
+     merging it.
+
+   The tool creates the repository from this template under the org, enables
+   **Pages** (source: GitHub Actions), creates the `main-requires-pr` ruleset
+   and the classic branch protection with the four required checks (`ci /
+   Build (blocking)`, `ci / Test (blocking)`, `ci / Texts (blocking)`,
+   `locales / Validate locale files`), switches on allow-auto-merge,
+   delete-branch-on-merge, CodeQL default setup, and Dependabot security fixes
+   and alerts, verifies the template link, then opens the first PR: it
+   replaces the placeholders above and installs `@museumwnf/<slug>-data@latest`
+   — using `@latest` rather than a bare `npm install` so it resolves whatever
+   major the dataset has actually reached, meaning this step cannot be wrong
+   for a dataset published past 1.x (the data package must already be
+   published on npmjs for this to succeed) — and commits `package-lock.json`,
+   which CI needs because it runs `npm ci`.
 
    There is nothing to register with `viewer-core`/`viewer-layout`/`viewer-i18n`
    or the dataset package for this: a website is discovered from the
    `website-template` link GitHub records when the repository is created, so it
    becomes a downstream consumer of all four the moment it exists, and every
    one of them is public — no access grant to request.
-6. **Declare the catalogue and the sheet.** A scaffolded website already has
+
+   The tool needs an operator logged in with `gh` and admin rights on the org;
+   it never stores a token.
+
+   **What the tool does not do**, which stays by hand afterwards:
+   - The **texts PR** — this website's editorial copy comes from the
+     extractor, not the tool. See inventory-app's
+     [`docs/deployment/new-website.md`](https://github.com/museumwithnofrontiers/inventory-app/blob/main/docs/deployment/new-website.md).
+   - The **catalogue and sheet declaration** — step 2 below.
+   - The **theme** — see "Webdesigner — theming the website" below.
+   - The **`.new-architecture/<slug>` submodule** pointer in inventory-app —
+     also documented in `docs/deployment/new-website.md` above.
+2. **Declare the catalogue and the sheet.** A scaffolded website already has
    four real pages — a landing page, a results page, a record page and an
    About page — and none of them is written here: they are the composed
    views of `@museumwnf/viewer-layout/views` (see "Composed views" below),
@@ -89,7 +96,7 @@ combines three `@museumwnf` packages from npmjs:
    dataset is and who published it. A page that is not one of the composed
    views' shape is the website's own component on the same content
    components, registered on the same route name.
-7. **Merge the first PR** (the placeholder replacement). The deploy workflow
+3. **Merge the first PR** (the placeholder replacement). The deploy workflow
     publishes the site to `https://museumwithnofrontiers.github.io/<dataset>/`.
 
 The CI, deploy and audit workflows carry an
