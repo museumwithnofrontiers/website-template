@@ -96,16 +96,20 @@ combines these `@museumwnf` packages from npmjs:
    - The **theme** — see "Webdesigner — theming the website" below.
    - The **`.new-architecture/<slug>` submodule** pointer in inventory-app —
      also documented in `docs/deployment/new-website.md` above.
-2. **Declare the catalogue and the sheet.** A scaffolded website already has
-   four real pages — a landing page, a results page, a record page and an
-   About page — and none of them is written here: they are the composed
-   views of `@museumwnf/viewer-layout/views` (see "Composed views" below),
-   driven by declarations. The results and record pages read `catalogue` and
-   `sheet` from `src/composables/useCatalogue.js`: `catalogue` says what the
-   results page filters on (which facets, what the URL carries for them, the
-   date rule, the page size) and how a row looks; `sheet` says which fields a
-   record shows, in what order, under which `sheet.field.*` labels. Adjust
-   both to the dataset — a facet is one line in `facets` and one in
+2. **Declare the search, the catalogue and the sheet.** A scaffolded website
+   already has five real pages — a landing page, a search form, a results
+   page, a record page and an About page — and none of them is written here:
+   they are the composed views of `@museumwnf/viewer-layout/views` (see
+   "Composed views" below), driven by declarations. The records come from
+   `src/composables/data.js`, viewer-core's catalogue data layer
+   (`useCatalogue`: the entities, labels, routes and the result row). The
+   search, results and record pages read `search`, `catalogue` and `sheet`
+   from `src/composables/catalogue.js`: `search` says which fields the
+   keyword rows search (viewer-core's field search); `catalogue` says what the
+   results page filters on (the keyword rows, the facets, the date rule, the
+   page size) and which parts of `itemRow` a row shows; `sheet` says which
+   fields a record shows, in what order, under which `sheet.field.*` labels.
+   Adjust them to the dataset — a facet is one line in `facets` and one in
    `controls`, a field is one line — and the cards and the record on display
    come from `home` in `src/dataset.config.js`. The About page reads its own
    `about` declaration, next to `home` in the same file; replace its
@@ -221,46 +225,19 @@ shell, media host, outbound links. Before the application mounts, the website
 reads nothing from its package but `manifest.json`. `src/main.js` needs no edit
 after the placeholders are replaced.
 
-### A gallery or exhibition website
+### A gallery or an exhibition
 
-A `gallery` or `exhibition` website does not write its platform pages in
-`src/dataset.config.js`: `@museumwnf/viewer-layout/dxa` exports them already
-composed, and `standardRoutes(family, config)` returns them as route entries
-a website spreads into `extraViews` — see the commented-out examples right
-above `extraViews` in `src/dataset.config.js`.
+Does not start here. A DXA gallery or exhibition starts from
+[`gallery-template`](https://github.com/museumwithnofrontiers/gallery-template)
+or [`exhibition-template`](https://github.com/museumwithnofrontiers/exhibition-template),
+whose pages, shell and routes are the family's (`@museumwnf/viewer-layout/dxa`),
+so the site holds only its own values (decision D5 of the
+[architecture reference](https://github.com/museumwithnofrontiers/inventory-app/issues/1510)).
 
-`standardRoutes('gallery', config)` provides the About page, the Credits
-page, the search how-to page, the partners list, a partner's profile, the
-search results page, the timeline results page, the timeline gallery, the
-collection results page, the collection search form and a partner's objects
-page. Only Credits needs a per-site string, passed as `config.creditsBody`.
-
-`standardRoutes('exhibition', config)` provides the search how-to page, the
-partners list, a partner's (or institution's) profile, the search results
-page, the timeline results page, the timeline gallery, the collection
-results page, the collection search form and a partner's (or institution's)
-objects page — the institution pages share the partner pages' component,
-with no separate route to write. About, the theme gallery, the theme pages
-and the related-content page stay out of the factory for now, blocked on the
-Theme epic (inventory-app#1729). Exhibition's per-site strings are the five
-keys of `config.partnerObjects`: `emptyPartner`, `emptyInstitution`,
-`institutionSummary`, `partnerProfileLabel`, `institutionProfileLabel`.
-
-Every route name and path the factory registers is pinned inside
-viewer-layout to what every live DXA site already uses — never redeclare one
-of them here, or a second declaration of the same address will drift from
-the first. The website's own routes stay in `src/dataset.config.js`: home,
-item, and the entrances into the collection, the timeline and the partners
-section — pages that read this dataset's own shape rather than the shape the
-factory already covers.
-
-Full page, prop and slot detail: viewer-layout's README,
-["DXA family pages"](https://github.com/museumwithnofrontiers/viewer-layout#dxa-family-pages).
-
-**2. Records and translations come from viewer-core, lazily.** `entityRef`,
-`byId`, `loadTranslations`, `translations`, `tr` — see `src/composables/useCatalogue.js`,
-which is derivation over those and holds no state of its own. Rename it after
-the website. Nothing in `src/` imports `@inventory-data` directly, and nothing
+**2. Records and translations come from viewer-core, lazily.** `src/composables/data.js`
+is viewer-core's catalogue data layer (`useCatalogue`, over `entityRef`,`
+byId`, `loadTranslations`, `translations`, `tr`), and holds no state of its
+own. Nothing in `src/` imports `@inventory-data` directly, and nothing
 keeps a second cache. In particular, never resolve a language with an
 interpolated dynamic import: `` import(`@inventory-data/translations/items.${lang}.json`) ``
 cannot be resolved statically, so a bundler pulls in every language of that
