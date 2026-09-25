@@ -4,8 +4,25 @@ Template repository for MWNF websites. Every new website repo
 (`museumwithnofrontiers/<dataset>`, public) is created **once** from this template — it is
 never installed as a dependency and never updated in existing websites.
 
+**Its role.** This template is the generic scaffold for a new kind of
+product — Explore (inventory-app#1745), the galleries hub (inventory-app#1744) — built on
+viewer-core's data layer and viewer-layout's composed views. A new gallery or
+a new exhibition, one of the DXA family, starts from
+[`gallery-template`](https://github.com/museumwithnofrontiers/gallery-template)
+or [`exhibition-template`](https://github.com/museumwithnofrontiers/exhibition-template).
+The three templates stay separate on purpose (decision D5 of the platform's
+[architecture reference](https://github.com/museumwithnofrontiers/inventory-app/issues/1510), which also says what goes where
+across the packages and what a site's files are called).
+
+Every live website was created from this template, including the galleries
+and exhibitions (with `--class gallery|exhibition`, below), and package CI,
+propagation and the organization site's list find websites through its link.
+Until [inventory-app#2018](https://github.com/museumwithnofrontiers/inventory-app/issues/2018)
+makes the tooling recognise the family templates, a site created from one of
+them is not found.
+
 A website is a light, static Vue 3 front-end for one published dataset. It
-combines three `@museumwnf` packages from npmjs:
+combines these `@museumwnf` packages from npmjs:
 
 | Package | Role |
 | --- | --- |
