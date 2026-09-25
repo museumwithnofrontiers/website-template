@@ -35,10 +35,18 @@ describe('website smoke test', () => {
 
   // The other pages a scaffolded website starts with, rendered against the
   // data package by the composed views, each on an application mounted on
-  // that page's address — as a visitor arrives from a link. The results page
-  // lists records under the filter panel the catalogue spec declares; the
-  // record page shows a record's sheet under the labels the sheet spec
-  // declares; the About page renders the one body entry the about spec names.
+  // that page's address — as a visitor arrives from a link. The search form
+  // draws the keyword rows the search spec declares; the results page lists
+  // records under the filter panel the catalogue spec declares; the record
+  // page shows a record's sheet under the labels the sheet spec declares; the
+  // About page renders the one body entry the about spec names.
+  it('renders the composed search form from the search spec', async () => {
+    const { app, host } = await mountSite(config, messages, '#/search')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-search-form__row')).not.toBeNull(), { timeout: 20000 })
+    expect(host.querySelectorAll('.mwnf-search-form__row').length).toBeGreaterThan(1)
+    app.unmount()
+  }, 60000)
+
   it('renders the composed results page from the catalogue spec', async () => {
     const { app, host } = await mountSite(config, messages, '#/catalogue')
     await vi.waitFor(() => expect(host.querySelector('.mwnf-list__row')).not.toBeNull(), { timeout: 20000 })
@@ -64,7 +72,7 @@ describe('website smoke test', () => {
   it('declares every route by name, and leaves the catch-all to the router', () => {
     // A named route is what a view links to; a path written into a link is a
     // second declaration of the same address, and the two drift.
-    expect(checkRoutes(config, { names: ['catalogue', 'item', 'about'] })).toEqual([])
+    expect(checkRoutes(config, { names: ['search', 'catalogue', 'item', 'about'] })).toEqual([])
     // The three slots are the composed views, not viewer-core's generic ones.
     expect(Object.keys(config.views ?? {}).sort()).toEqual(['detail', 'home', 'list'])
   })

@@ -2,10 +2,10 @@ import {
   languageLabels, mwnfLinks, offeredLanguages, sectionMeta, useDataPackage,
 } from '@museumwnf/viewer-core'
 import {
-  CatalogueResultsView, HomeView, RecordView, TextPageView,
+  CatalogueResultsView, HomeView, RecordView, SearchFormView, TextPageView,
 } from '@museumwnf/viewer-layout/views'
 import SiteShell from './SiteShell.vue'
-import { catalogue, sheet } from './composables/useCatalogue.js'
+import { catalogue, search, sheet } from './composables/catalogue.js'
 
 // The whole declaration of this website. Before it mounts, the website reads
 // nothing from its package but the manifest: the languages it offers, their
@@ -76,6 +76,12 @@ export default {
         action: 'core.action.browse',
         to: { name: 'catalogue' },
       },
+      {
+        title: '__SITE_NAMESPACE__.nav.search',
+        description: '__SITE_NAMESPACE__.home.searchText',
+        action: 'core.action.search',
+        to: { name: 'search' },
+      },
     ],
     featured: {
       entity: 'items',
@@ -104,6 +110,7 @@ export default {
     links: [
       { section: 'home', label: 'core.nav.home', to: { name: 'home' } },
       { section: 'catalogue', label: '__SITE_NAMESPACE__.nav.catalogue', to: { name: 'catalogue' } },
+      { section: 'search', label: '__SITE_NAMESPACE__.nav.search', to: { name: 'search' } },
       { section: 'about', label: '__SITE_NAMESPACE__.nav.about', to: { name: 'about' } },
     ],
   },
@@ -128,55 +135,23 @@ export default {
   // not there yet.
   //
   // The 'home' name is the slot `views.home` fills. The routes below are the
-  // results page, the record page and the About page on the composed views,
-  // each driven by a spec passed as route props: the catalogue spec says what
-  // the list filters on and how a row looks, the sheet spec says which fields
-  // a record shows under which labels, and the about spec is one body entry.
+  // search form, the results page, the record page and the About page on the
+  // composed views, each driven by a spec passed as route props: the search
+  // spec says which fields the keyword rows search, the catalogue spec what
+  // the list filters on and how a row looks, the sheet spec which fields a
+  // record shows under which labels, and the about spec is one body entry.
   //
-  // A gallery or exhibition website does not write its platform pages here at
-  // all: `@museumwnf/viewer-layout/dxa` exports them already composed and
-  // confirmed byte-identical within their family's own site pair, and
-  // `standardRoutes(family, config)` returns them as ready-made route
-  // entries. Such a website spreads `...standardRoutes('<family>', config)`
-  // first in `extraViews`, keeping only its own routes after it — home, item
-  // and the entrances into the collection, the timeline and the partners
-  // section, which stay the website's own because they read this dataset's
-  // shape rather than the shape the factory already covers. Route names and
-  // paths are pinned inside the factory to what every DXA site already
-  // registers, so a deep link or a `legacyRoutes` entry targeting one of them
-  // keeps resolving unmodified — never redeclare one of those names or paths
-  // here. This scaffold is `standalone`, which has no standard routes: the
-  // examples below stay commented out on purpose, and a `standalone` build
-  // must never carry a live import of the DXA entry point.
-  //
-  // A gallery website:
-  //
-  //   import { standardRoutes } from '@museumwnf/viewer-layout/dxa'
-  //
-  //   extraViews: [
-  //     ...standardRoutes('gallery', { creditsBody: '__SITE_NAMESPACE__.credits.body' }),
-  //     // + this website's own routes: home, item, collection entrance,
-  //     // timeline entrance, partners entrance
-  //   ]
-  //
-  // An exhibition website:
-  //
-  //   import { standardRoutes } from '@museumwnf/viewer-layout/dxa'
-  //
-  //   extraViews: [
-  //     ...standardRoutes('exhibition', {
-  //       partnerObjects: {
-  //         emptyPartner: '__SITE_NAMESPACE__.partnerObjects.emptyPartner',
-  //         emptyInstitution: '__SITE_NAMESPACE__.partnerObjects.emptyInstitution',
-  //         institutionSummary: '__SITE_NAMESPACE__.partner.monumentsInExhibition',
-  //         partnerProfileLabel: '__SITE_NAMESPACE__.partnerObjects.partnerProfile',
-  //         institutionProfileLabel: '__SITE_NAMESPACE__.partnerObjects.institutionProfile',
-  //       },
-  //     }),
-  //     // + this website's own routes: home, item, collection entrance,
-  //     // timeline entrance, partners entrance
-  //   ]
+  // A gallery or an exhibition does not start from this template: it starts
+  // from gallery-template or exhibition-template, whose pages are the DXA
+  // family's (decision D5, inventory-app#1510).
   extraViews: [
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchFormView,
+      props: { spec: search },
+      meta: meta('search', 'items'),
+    },
     {
       path: '/catalogue',
       name: 'catalogue',
