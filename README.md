@@ -14,12 +14,10 @@ The three templates stay separate on purpose (decision D5 of the platform's
 [architecture reference](https://github.com/museumwithnofrontiers/inventory-app/issues/1510), which also says what goes where
 across the packages and what a site's files are called).
 
-Every live website was created from this template, including the galleries
-and exhibitions (with `--class gallery|exhibition`, below), and package CI,
-propagation and the organization site's list find websites through its link.
-Until [inventory-app#2018](https://github.com/museumwithnofrontiers/inventory-app/issues/2018)
-makes the tooling recognise the family templates, a site created from one of
-them is not found.
+Every website live today was created from this template, the galleries and
+exhibitions included, before they had templates of their own. Package CI,
+propagation and the organization site's list find a website through its link
+to any of the three templates.
 
 A website is a light, static Vue 3 front-end for one published dataset. It
 combines these `@museumwnf` packages from npmjs:
@@ -39,15 +37,17 @@ combines these `@museumwnf` packages from npmjs:
    same way `propagate.mjs` runs):
 
    ```
-   node tools/new-website.mjs --slug <slug> --class gallery|exhibition|standalone --namespace <ns> --title "<Site name>" [--dry-run] [--settings-only] [--no-merge]
+   node tools/new-website.mjs --slug <slug> --class standalone --namespace <ns> --title "<Site name>" [--dry-run] [--settings-only] [--no-merge]
    ```
 
    - `--slug` — the dataset key (e.g. `islamicart`), used for the repo name
      (`museumwithnofrontiers/<slug>`) and the data package
      (`@museumwnf/<slug>-data`); replaces every `__DATASET__` placeholder.
-   - `--class` — `standalone`, `gallery` or `exhibition`. A product website (a
-     whole virtual museum) is `standalone`; the DXA families are `gallery` or
-     `exhibition`. Sets `viewerI18n.class` and picks the shared texts bundle
+   - `--class` — `standalone` for a product website (a whole virtual museum),
+     created from this template. The same tool creates a DXA site from its
+     family's template with `--class gallery` or `--class exhibition` (and its
+     `--palette`) — that is the family template's README, not this one. Sets
+     `viewerI18n.class` and picks the shared texts bundle
      this website receives — see
      [`viewer-i18n`](https://github.com/museumwithnofrontiers/viewer-i18n) for
      what each bundle contains. Replaces every `__SITE_CLASS__` placeholder.
