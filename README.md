@@ -103,12 +103,15 @@ combines these `@museumwnf` packages from npmjs:
    "Composed views" below), driven by declarations. The records come from
    `src/composables/data.js`, viewer-core's catalogue data layer
    (`useCatalogue`: the entities, labels, routes and the result row). The
-   search, results and record pages read `search`, `catalogue` and `sheet`
-   from `src/composables/catalogue.js`: `search` says which fields the
-   keyword rows search (viewer-core's field search); `catalogue` says what the
-   results page filters on (the keyword rows, the facets, the date rule, the
-   page size) and which parts of `itemRow` a row shows; `sheet` says which
-   fields a record shows, in what order, under which `sheet.field.*` labels.
+   search, results and record pages read `catalogueSearchSpec`,
+   `catalogueResultsSpec` and `itemSheetSpec` from
+   `src/composables/catalogue.js`: `catalogueSearchSpec` says which fields the
+   keyword rows search (viewer-core's field search); `catalogueResultsSpec`
+   says what the results page filters on (the keyword rows, the facets, the
+   date rule, the page size) and which parts of `itemRow` a row shows;
+   `itemSheetSpec` says which fields a record shows, in what order, under which
+   `sheet.field.*` labels. A spec module exports `…Spec`, named after its
+   section and page.
    Adjust them to the dataset — a facet is one line in `facets` and one in
    `controls`, a field is one line — and the cards and the record on display
    come from `home` in `src/dataset.config.js`. The About page reads its own
