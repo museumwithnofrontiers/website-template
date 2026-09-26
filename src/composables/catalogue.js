@@ -17,7 +17,7 @@ import { countryLabel, itemRow } from './data.js'
 
 export const SEARCH_FIELDS = searchFields()
 
-export const search = {
+export const catalogueSearchSpec = {
   mode: 'rows',
   fields: searchFieldOptions(SEARCH_FIELDS),
   dates: { presets: centuryPresets() },
@@ -40,7 +40,7 @@ const { narrow } = useFieldSearch({ fields: SEARCH_FIELDS })
 // `itemRow`'s, the one every catalogue website shares, its `meta` naming what
 // follows the record's name.
 
-export const catalogue = {
+export const catalogueResultsSpec = {
   entity: 'items',
   keys: [...searchRowKeys(), 'country', 'from', 'to'],
   facets: {
@@ -74,7 +74,7 @@ export const catalogue = {
 // generous. Labels are the shared `sheet.field.*` entries; add a website
 // entry only for a label the shared vocabulary does not have.
 
-export const sheet = {
+export const itemSheetSpec = {
   entity: 'items',
   translations: [],
   fields: [

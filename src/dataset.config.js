@@ -5,7 +5,7 @@ import {
   CatalogueResultsView, HomeView, RecordView, SearchFormView, TextPageView,
 } from '@museumwnf/viewer-layout/views'
 import SiteShell from './SiteShell.vue'
-import { catalogue, search, sheet } from './composables/catalogue.js'
+import { catalogueResultsSpec, catalogueSearchSpec, itemSheetSpec } from './composables/catalogue.js'
 
 // The whole declaration of this website. Before it mounts, the website reads
 // nothing from its package but the manifest: the languages it offers, their
@@ -149,21 +149,21 @@ export default {
       path: '/search',
       name: 'search',
       component: SearchFormView,
-      props: { spec: search },
+      props: { spec: catalogueSearchSpec },
       meta: meta('search', 'items'),
     },
     {
       path: '/catalogue',
       name: 'catalogue',
       component: CatalogueResultsView,
-      props: { spec: catalogue },
+      props: { spec: catalogueResultsSpec },
       meta: meta('catalogue', 'items', 'countries'),
     },
     {
       path: '/item/:id',
       name: 'item',
       component: RecordView,
-      props: (route) => ({ spec: sheet, id: route.params.id }),
+      props: (route) => ({ spec: itemSheetSpec, id: route.params.id }),
       meta: meta('catalogue', 'items', 'countries', 'partners'),
     },
     {
