@@ -81,7 +81,9 @@ export const itemSheetSpec = {
     { key: 'location', label: 'sheet.field.location', value: (ctx) => [ctx.text.location, countryLabel(ctx.record.country_id)].filter(Boolean).join(', ') },
     { key: 'holder', label: 'sheet.field.holdingMuseum', value: 'holder' },
     { key: 'date', label: 'sheet.field.date', value: 'dates' },
-    { key: 'artists', label: 'sheet.field.artists', value: (ctx) => ctx.record.artist_names, join: ', ' },
+    // The page's language's own artist line: legacy printed each language's,
+    // and the record's `artist_names` come from one language's line.
+    { key: 'artists', label: 'sheet.field.artists', value: 'artist' },
     { key: 'inventoryNumber', label: 'sheet.field.inventoryNumber', value: (ctx) => ctx.record.owner_reference },
     { key: 'materials', label: 'sheet.field.materials', value: 'type' },
     { key: 'dimensions', label: 'sheet.field.dimensions', value: 'dimensions' },
