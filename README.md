@@ -228,6 +228,27 @@ shell, media host, outbound links. Before the application mounts, the website
 reads nothing from its package but `manifest.json`. `src/main.js` needs no edit
 after the placeholders are replaced.
 
+### The global search (opt-in)
+
+A website can send its visitors to the global search
+(`museumwithnofrontiers.github.io/search`, inventory-app M15). It is **off by
+default**, and turning it on is one line in `src/dataset.config.js`:
+
+```js
+globalSearch: true,
+```
+
+viewer-layout's header then shows a search box (`GlobalSearchBox`, the texts
+`layout.globalSearch.*`). It sends the visitor to the search site with the
+text, the page's language and this site's slug as `from`, so the search site
+can offer "Back to <site>". The slug is `site.slug`, or the last segment of
+`site.origin`. A site with a header of its own (the `header` slot) places
+`GlobalSearchBox` where it wants; `{ url: 'https://…/' }` instead of `true`
+points the box at another search address.
+
+It is turned on only for the sites whose legacy had a similar feature, by the
+parity check (inventory-app `scripts/parity/README.md`).
+
 ### A gallery or an exhibition
 
 Does not start here. A DXA gallery or exhibition starts from
